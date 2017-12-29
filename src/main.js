@@ -65,7 +65,23 @@ function Tile(x, y) {
 
 // play
 function play(e) {
+  //if (gamestate.turn % 2 !== 0) return;
 
+  move(gamestate, getIndex(e));
+
+  render();
+  ++gamestate.turn;
+}
+
+function move(state, index) {
+  let i = 0, column = state.tiles[index];
+  if (column[i++].player !== -10) return -1;
+
+  for (; i < column.length; ++i) {
+    if (column[i].player != -10) break;
+  }
+
+  column[--i].player = state.turn % 2;
 }
 
 // constructGrid
