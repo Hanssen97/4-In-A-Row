@@ -8,6 +8,7 @@ var gamestate = {
   score: [0,0],
 };
 
+
 // Constants
 const SEARCHDEPTH =   6;
 const COLORS = {
@@ -23,13 +24,14 @@ const DIMENTIONS = {
 }
 const TILESIZE = 100;
 
-// main
+
+// main ------------------------------------------------------------------------
 window.onload = function () {
   setup();
   render();
 };
 
-// setup
+// setup -----------------------------------------------------------------------
 function setup() {
   canvas = document.getElementById("board");
   ctx    = canvas.getContext("2d");
@@ -39,7 +41,7 @@ function setup() {
   canvas.addEventListener("click", (e) => play(e), false);
 }
 
-// Tile
+// Tile ------------------------------------------------------------------------
 function Tile(x, y) {
   this.x      =   x;
   this.y      =   y;
@@ -63,7 +65,7 @@ function Tile(x, y) {
   };
 }
 
-// play
+// play ------------------------------------------------------------------------
 function play(e) {
   //if (gamestate.turn % 2 !== 0) return;
 
@@ -76,6 +78,7 @@ function play(e) {
   ++gamestate.turn;
 }
 
+// move ------------------------------------------------------------------------
 function move(state, index) {
   let i = 0, column = state.tiles[index];
   if (column[i++].player !== -10) return -1;
@@ -89,13 +92,13 @@ function move(state, index) {
   return column[i];
 }
 
-// checkWin
+// checkWin --------------------------------------------------------------------
 function checkWin(tile) {
   let winner = validate(gamestate, tile);
   if (winner !== -10) win(winner);
 }
 
-// validate
+// validate --------------------------------------------------------------------
 function validate(state, tile) {
   let player = gamestate.turn % 2;
 
@@ -108,6 +111,7 @@ function validate(state, tile) {
   return -10;
 }
 
+// validateRow ----------------------------------------------------------------
 function validateRow(state, tile) {
   let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
 
@@ -122,7 +126,7 @@ function validateRow(state, tile) {
   return sum;
 }
 
-//validateCol
+// validateCol -----------------------------------------------------------------
 function validateColumn(state, tile) {
   let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
 
@@ -137,7 +141,7 @@ function validateColumn(state, tile) {
   return sum;
 }
 
-//validateDiagonalUp
+// validateDiagonalUp ----------------------------------------------------------
 function validateDiagonalUp(state, tile) {
   let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
 
@@ -159,7 +163,7 @@ function validateDiagonalUp(state, tile) {
   return sum;
 }
 
-//validateDiagonalUp
+// validateDiagonalUp ----------------------------------------------------------
 function validateDiagonalDown(state, tile) {
   let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
 
@@ -181,14 +185,14 @@ function validateDiagonalDown(state, tile) {
   return sum;
 }
 
-// win
+// win -------------------------------------------------------------------------
 function win(player) {
   ++gamestate.score[player];
   setTimeout(() => {constructGrid(); render();}, 100);
 }
 
 
-// constructGrid
+// constructGrid ---------------------------------------------------------------
 function constructGrid() {
   gamestate.tiles = [];
   for (let i = 0; i < DIMENTIONS.grid.width; ++i) {
@@ -201,22 +205,22 @@ function constructGrid() {
   }
 }
 
-// render
+// render ----------------------------------------------------------------------
 function render() {
   renderHTML();
   renderTiles();
 }
-// renderHTML
+// renderHTML ------------------------------------------------------------------
 function renderHTML() {
   document.getElementById("s1").innerHTML = gamestate.score[0];
   document.getElementById("s2").innerHTML = gamestate.score[1];
 }
-// renderTiles
+// renderTiles -----------------------------------------------------------------
 function renderTiles() {
   gamestate.tiles.map(tiles => tiles.map(tile => tile.render()));
 }
 
-// getIndex
+// getIndex --------------------------------------------------------------------
 function getIndex(e){
     let totalOffsetX   = 0;
     let currentElement = canvas;
