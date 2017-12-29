@@ -95,3 +95,15 @@ function renderHTML() {
 function renderTiles() {
   gamestate.tiles.map(tiles => tiles.map(tile => tile.render()));
 }
+
+// getIndex
+function getIndex(e){
+    let totalOffsetX   = 0;
+    let currentElement = canvas;
+
+    do {
+        totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+    } while (currentElement = currentElement.offsetParent);
+
+    return Math.floor( (event.pageX - totalOffsetX) / TILESIZE );
+}
