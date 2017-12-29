@@ -67,7 +67,10 @@ function Tile(x, y) {
 function play(e) {
   //if (gamestate.turn % 2 !== 0) return;
 
-  move(gamestate, getIndex(e));
+  let tile = move(gamestate, getIndex(e));
+  if (tile === -1) return; // Illegal move
+
+  checkWin(tile);
 
   render();
   ++gamestate.turn;
@@ -78,11 +81,112 @@ function move(state, index) {
   if (column[i++].player !== -10) return -1;
 
   for (; i < column.length; ++i) {
-    if (column[i].player != -10) break;
+    if (column[i].player !== -10) break;
   }
 
   column[--i].player = state.turn % 2;
+
+  return column[i];
 }
+
+// checkWin
+function checkWin(tile) {
+  let winner = validate(gamestate, tile);
+  if (winner !== -10) win(winner);
+}
+
+// validate
+function validate(state, tile) {
+  let player = gamestate.turn % 2;
+
+  if      (validateRow(state, tile, 0)          === 4) return player;
+  else if (validateColumn(state, tile, 0)       === 4) return player;
+  else if (validateDiagonalUp(state, tile, 0)   === 4) return player;
+  else if (validateDiagonalDown(state, tile, 0) === 4) return player;
+
+  // No winner.
+  return -10;
+}
+
+function validateRow(state, tile) {
+  let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
+
+  do { ++x }
+  while ((x < state.tiles.length) && (state.tiles[x][y].player === tile.player))
+  --x;
+
+  while ((x >= 0) && (state.tiles[x][y].player === tile.player)) {
+    ++sum; x--;
+  }
+
+  return sum;
+}
+
+//validateCol
+function validateColumn(state, tile) {
+  let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
+
+  do { ++y }
+  while ((y < state.tiles[0].length) && (state.tiles[x][y].player === tile.player))
+  --y;
+
+  while ((y >= 0) && (state.tiles[x][y].player === tile.player)) {
+    ++sum; y--;
+  }
+
+  return sum;
+}
+
+//validateDiagonalUp
+function validateDiagonalUp(state, tile) {
+  let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
+
+  do { ++y; --x; }
+  while (
+            (y < state.tiles[0].length) &&
+            (x >= 0) &&
+            (state.tiles[x][y].player === tile.player)
+        )
+  --y; ++x;
+
+  while (
+            (y >= 0) &&
+            (x < state.tiles.length) &&
+            (state.tiles[x][y].player === tile.player)) {
+    ++sum; --y; ++x;
+  }
+
+  return sum;
+}
+
+//validateDiagonalUp
+function validateDiagonalDown(state, tile) {
+  let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
+
+  do { --y; --x; }
+  while (
+            (y >= 0) &&
+            (x >= 0) &&
+            (state.tiles[x][y].player === tile.player)
+        )
+  ++y; ++x;
+
+  while (
+            (y < state.tiles[0].length) &&
+            (x < state.tiles.length) &&
+            (state.tiles[x][y].player === tile.player)) {
+    ++sum; ++y; ++x;
+  }
+
+  return sum;
+}
+
+// win
+function win(player) {
+  ++gamestate.score[player];
+  setTimeout(() => {constructGrid(); render();}, 100);
+}
+
 
 // constructGrid
 function constructGrid() {
