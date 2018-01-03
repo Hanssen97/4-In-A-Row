@@ -39,7 +39,7 @@ function setup() {
 
   constructGrid();
 
-  canvas.addEventListener("click", (e) => play(e), false);
+  canvas.addEventListener("click", e => play(e), false);
 }
 
 // Tile ------------------------------------------------------------------------
@@ -68,19 +68,19 @@ function Tile(x, y) {
 
 // play ------------------------------------------------------------------------
 function play(e) {
-  if (gamestate.turn % 2 !== 0) return;
+  if (gamestate.turn % 2 != 0) return;
 
   let tile = doMove(gamestate, getIndex(e));
   if (tile === -1) return; // Illegal move
 
-  checkWin(tile);
   ++gamestate.turn;
 
   // Check move consequence and render.
+  checkWin(tile);
   render();
 
   // Run AI, check move consequence, and render.
-    setTimeout(() => ai(), 300);
+  setTimeout(() => ai(), 300);
 
 }
 
@@ -193,7 +193,7 @@ function validateDiagonalDown(state, tile) {
 function win(player) {
   ++gamestate.score[player];
   gamestate.perception = [0,0];
-  setTimeout(() => {constructGrid(); render();}, 3000);
+  setTimeout(() => {constructGrid(); render();}, 2000);
 }
 
 
