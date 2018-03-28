@@ -1,8 +1,9 @@
-"use strict";
+"use strict"
 
 // Globals
-var canvas, ctx;
-var gamestate = {
+var canvas,
+    ctx,
+    gamestate = {
   turn:           0,
   tiles:         [],
   score:      [0,0],
@@ -11,7 +12,7 @@ var gamestate = {
 
 
 // Constants
-const SEARCHDEPTH =   4;
+const SEARCHDEPTH = 3;
 const COLORS = {
   grey:   "#E4F1FE",
   player: "#19B5FE",
@@ -21,9 +22,9 @@ const DIMENTIONS = {
   grid: {
     height: 6,
     width:  7,
-  }
+  },
+  tilesize: 100
 }
-const TILESIZE = 100;
 
 
 // main ------------------------------------------------------------------------
@@ -60,8 +61,8 @@ function Tile(x, y) {
         ctx.fillStyle = COLORS.ai;
         break;
     }
-    ctx.rect(this.x, this.y, TILESIZE, TILESIZE);
-    ctx.fillRect(x, this.y, TILESIZE, TILESIZE);
+    ctx.rect(this.x, this.y, DIMENTIONS.tilesize, DIMENTIONS.tilesize);
+    ctx.fillRect(x, this.y, DIMENTIONS.tilesize, DIMENTIONS.tilesize);
     ctx.stroke();
   };
 }
@@ -73,15 +74,14 @@ function play(e) {
   let tile = doMove(gamestate, getIndex(e));
   if (tile === -1) return; // Illegal move
 
-  ++gamestate.turn;
-
   // Check move consequence and render.
-  checkWin(tile);
+  if ( !checkWin(tile) ) {
+    // Run AI, check move consequence, and render.
+    ++gamestate.turn;
+    setTimeout(() => ai(), 300);
+  }
+
   render();
-
-  // Run AI, check move consequence, and render.
-  setTimeout(() => ai(), 300);
-
 }
 
 // move ------------------------------------------------------------------------
@@ -101,15 +101,21 @@ function doMove(state, index) {
 // checkWin --------------------------------------------------------------------
 function checkWin(tile) {
   let winner = validate(gamestate, tile);
-  if (winner !== -10) win(winner);
+  if (winner !== -10) {
+    win(winner);
+    return true;
+  }
+  return false;
 }
 
 // validate --------------------------------------------------------------------
 function validate(state, tile) {
-  if      (validateRow(state, tile)          > 3) return state.turn % 2;
-  else if (validateColumn(state, tile)       > 3) return state.turn % 2;
-  else if (validateDiagonalUp(state, tile)   > 3) return state.turn % 2;
-  else if (validateDiagonalDown(state, tile) > 3) return state.turn % 2;
+  if (
+    validateRow(state, tile)          > 3 ||
+    validateColumn(state, tile)       > 3 ||
+    validateDiagonalUp(state, tile)   > 3 ||
+    validateDiagonalDown(state, tile) > 3
+  ) return state.turn % 2;
 
   // No winner.
   return -10;
@@ -117,7 +123,7 @@ function validate(state, tile) {
 
 // validateRow ----------------------------------------------------------------
 function validateRow(state, tile) {
-  let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
+  let x = tile.x/DIMENTIONS.tilesize,   y = tile.y/DIMENTIONS.tilesize,   sum = 0;
 
   do { ++x }
   while ((x < state.tiles.length) && (state.tiles[x][y].player === tile.player))
@@ -132,7 +138,7 @@ function validateRow(state, tile) {
 
 // validateCol -----------------------------------------------------------------
 function validateColumn(state, tile) {
-  let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
+  let x = tile.x/DIMENTIONS.tilesize,   y = tile.y/DIMENTIONS.tilesize,   sum = 0;
 
   do { ++y }
   while ((y < state.tiles[0].length) && (state.tiles[x][y].player === tile.player))
@@ -147,7 +153,7 @@ function validateColumn(state, tile) {
 
 // validateDiagonalUp ----------------------------------------------------------
 function validateDiagonalUp(state, tile) {
-  let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
+  let x = tile.x/DIMENTIONS.tilesize,   y = tile.y/DIMENTIONS.tilesize,   sum = 0;
 
   do { ++y; --x; }
   while (
@@ -169,7 +175,7 @@ function validateDiagonalUp(state, tile) {
 
 // validateDiagonalUp ----------------------------------------------------------
 function validateDiagonalDown(state, tile) {
-  let x = tile.x/TILESIZE,   y = tile.y/TILESIZE,   sum = 0;
+  let x = tile.x/DIMENTIONS.tilesize,   y = tile.y/DIMENTIONS.tilesize,   sum = 0;
 
   do { --y; --x; }
   while (
@@ -193,7 +199,16 @@ function validateDiagonalDown(state, tile) {
 function win(player) {
   ++gamestate.score[player];
   gamestate.perception = [0,0];
-  setTimeout(() => {constructGrid(); render();}, 2000);
+  render();
+
+  setTimeout(() => {
+    gamestate.turn = (player+1) % 2;
+
+    constructGrid();
+    render();
+
+    if (gamestate.turn % 2 === 1) ai();
+  }, 2000);
 }
 
 
@@ -203,7 +218,7 @@ function constructGrid() {
   for (let i = 0; i < DIMENTIONS.grid.width; ++i) {
     let column = [];
     for (let k = 0; k < DIMENTIONS.grid.height; ++k) {
-      let tile = new Tile(i*TILESIZE, k*TILESIZE);
+      let tile = new Tile(i*DIMENTIONS.tilesize, k*DIMENTIONS.tilesize);
       column.push(tile);
     }
     gamestate.tiles.push(column);
@@ -217,8 +232,11 @@ function render() {
 }
 // renderHTML ------------------------------------------------------------------
 function renderHTML() {
-  document.getElementById("s1").innerHTML = gamestate.score[0];
-  document.getElementById("s2").innerHTML = gamestate.score[1] + "   ( " + gamestate.perception[1] + " )";
+  document.getElementById("s1").innerHTML =
+    gamestate.score[0];
+
+  document.getElementById("s2").innerHTML =
+    gamestate.score[1];
 }
 // renderTiles -----------------------------------------------------------------
 function renderTiles() {
@@ -234,7 +252,7 @@ function getIndex(e){
         totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
     } while (currentElement = currentElement.offsetParent);
 
-    return Math.floor( (event.pageX - totalOffsetX) / TILESIZE );
+    return Math.floor( (event.pageX - totalOffsetX) / DIMENTIONS.tilesize );
 }
 
 // ai --------------------------------------------------------------------------
@@ -248,13 +266,13 @@ function ai() {
   gamestate.perception[gamestate.turn % 2] = Math.round(nextMove.score);
 
   // // Check move consequence and render.
-  checkWin(tile);
-  render();
+  if (checkWin(tile)) return;
 
   ++gamestate.turn;
+  render();
 
   // UNCOMMENT TO LET THE AI PLAY AGAINST ITSELF AFTER FIRST HUMAN MOVE.
-     //setTimeout(() => ai(), 220);
+    //setTimeout(() => ai(), 220);
 }
 
 // getBestMoves -----------------------------------------------------------------
@@ -280,15 +298,12 @@ function getBestMoves(s, depth = 0) {
     let winner = validate(state, tile);
 
     // If there is a winner, return the move with a score based on the formula.
-    if      ( winner == gPlayer )     return [{score:(Math.pow(2,(SEARCHDEPTH-depth)/2)), x}];
-    else if ( winner == +(!gPlayer) ) return [{score:(Math.pow(3,(SEARCHDEPTH-depth))*-1), x}];
-
+    if (winner === gPlayer)     return [{score: Math.pow( 3,(SEARCHDEPTH-(depth/2))), x}];
+    if (winner === +(!gPlayer)) return [{score:-Math.pow( 6,(SEARCHDEPTH-depth)), x}];
 
     let move = getBestMoves(state, depth+1); // Validate best path for this node.
 
-
     if (depth === 0) {
-      //console.log("current move: ", {score:move.score, x}, " vs bestMove: ", bestMove);
       // This is the root node, so we compare this move with the best one soo far.
       if (move[0].score > bestMoves[0].score) {
         // This move is better than the current best, so we clear the previous
@@ -303,7 +318,6 @@ function getBestMoves(s, depth = 0) {
       bestMoves[0].score += move[0].score;
     }
   }
-  //if (depth === 0) return bestMoves; // This is the root node so we return the list.
 
   return bestMoves; // This is a path so we return the best move for this path.
 }
