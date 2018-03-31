@@ -12,7 +12,7 @@ var canvas,
 
 
 // Constants
-const SEARCHDEPTH = 3;
+const SEARCHDEPTH = 4;
 const COLORS = {
   grey:   "#E4F1FE",
   player: "#19B5FE",
@@ -76,7 +76,7 @@ function play(e) {
 
   // Check move consequence and render.
   if ( !checkWin(tile) ) {
-    // Run AI, check move consequence, and render.
+    // Run AI.
     ++gamestate.turn;
     setTimeout(() => ai(), 300);
   }
@@ -204,7 +204,7 @@ function win(player) {
   setTimeout(() => {
     gamestate.turn = (player+1) % 2;
 
-    constructGrid();
+    resetGrid();
     render();
 
     if (gamestate.turn % 2 === 1) ai();
@@ -222,6 +222,15 @@ function constructGrid() {
       column.push(tile);
     }
     gamestate.tiles.push(column);
+  }
+}
+
+// resetGrid ---------------------------------------------------------------
+function resetGrid() {
+  for (let i = 0; i < DIMENTIONS.grid.width; ++i) {
+    for (let k = 0; k < DIMENTIONS.grid.height; ++k) {
+      gamestate.tiles[i][k].player = -10;
+    }
   }
 }
 
@@ -298,8 +307,8 @@ function getBestMoves(s, depth = 0) {
     let winner = validate(state, tile);
 
     // If there is a winner, return the move with a score based on the formula.
-    if (winner === gPlayer)     return [{score: Math.pow( 3,(SEARCHDEPTH-(depth/2))), x}];
-    if (winner === +(!gPlayer)) return [{score:-Math.pow( 6,(SEARCHDEPTH-depth)), x}];
+    if (winner === gPlayer)     return [{score: Math.pow(2, SEARCHDEPTH-depth), x}];
+    if (winner === +(!gPlayer)) return [{score:-Math.pow(7, SEARCHDEPTH-depth), x}];
 
     let move = getBestMoves(state, depth+1); // Validate best path for this node.
 
