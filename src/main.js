@@ -78,7 +78,7 @@ function play(e) {
   if ( !checkWin(tile) ) {
     // Run AI.
     ++gamestate.turn;
-    setTimeout(() => ai(), 300);
+    setTimeout(() => ai(), 10); // Avoid blocking render.
   }
 
   render();
@@ -207,8 +207,9 @@ function win(player) {
     resetGrid();
     render();
 
-    if (gamestate.turn % 2 === 1) ai();
-  }, 2000);
+    if (gamestate.turn % 2 === 1)
+      setTimeout(() => ai(), 10); // Avoid blocking render.
+  }, 1000);
 }
 
 
