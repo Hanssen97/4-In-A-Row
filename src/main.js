@@ -78,7 +78,7 @@ function play(e) {
   if ( !checkWin(tile) ) {
     // Run AI.
     ++gamestate.turn;
-    setTimeout(() => ai(), 10); // Avoid blocking render.
+    setTimeout(() => ai(), 50); // Avoid renderblock.
   }
 
   render();
@@ -208,7 +208,7 @@ function win(player) {
     render();
 
     if (gamestate.turn % 2 === 1)
-      setTimeout(() => ai(), 10); // Avoid blocking render.
+      setTimeout(() => ai(), 50); // Avoid renderblock.
   }, 1000);
 }
 
@@ -308,8 +308,8 @@ function getBestMoves(s, depth = 0) {
     let winner = validate(state, tile);
 
     // If there is a winner, return the move with a score based on the formula.
-    if (winner === gPlayer)     return [{score: Math.pow(2, SEARCHDEPTH-depth), x}];
-    if (winner === +(!gPlayer)) return [{score:-Math.pow(7, SEARCHDEPTH-depth), x}];
+    if (winner === gPlayer)     return [{score: Math.pow(3, 4-depth/SEARCHDEPTH), x}];
+    if (winner === +(!gPlayer)) return [{score:-Math.pow(12, 4-depth/SEARCHDEPTH), x}];
 
     let move = getBestMoves(state, depth+1); // Validate best path for this node.
 
