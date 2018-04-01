@@ -312,8 +312,8 @@ function getBestMoves(s, depth = 0) {
     let winner = validate(state, tile);
 
     // If there is a winner, return the move with a score based on the formula.
-    if (winner === gPlayer)     return [{score: Math.pow(3, 4-depth/SEARCHDEPTH), x}];
-    if (winner === +(!gPlayer)) return [{score:-Math.pow(12, 4-depth/SEARCHDEPTH), x}];
+    if (winner === gPlayer)     return [{score: Math.pow( 3, 4-depth), x}];
+    if (winner === +(!gPlayer)) return [{score:-Math.pow( 5, 5-depth), x}];
 
     let move = getBestMoves(state, depth+1); // Validate best path for this node.
 
