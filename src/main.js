@@ -13,7 +13,7 @@ var canvas,
 
 // Constants
 const SEARCHDEPTH = 4;
-const RENDERPAUSE = 100; // ms
+const RENDERPAUSE = 10; // ms
 const COLORS = {
   grey:   "#E4F1FE",
   player: "#19B5FE",
@@ -251,7 +251,11 @@ function renderHTML() {
 }
 // renderTiles -----------------------------------------------------------------
 function renderTiles() {
-  gamestate.tiles.map(tiles => tiles.map(tile => tile.render()));
+  for (let i = 0; i < DIMENTIONS.grid.width; ++i) {
+    for (let k = 0; k < DIMENTIONS.grid.height; ++k) {
+      gamestate.tiles[i][k].render();
+    }
+  }
 }
 
 // getIndex --------------------------------------------------------------------
