@@ -13,7 +13,7 @@ var canvas,
 
 // Constants
 const SEARCHDEPTH = 4;
-const RENDERPAUSE = 10; // ms
+const RENDERPAUSE = 50; // ms
 const COLORS = {
   grey:   "#E4F1FE",
   player: "#19B5FE",
