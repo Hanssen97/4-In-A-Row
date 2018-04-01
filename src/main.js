@@ -13,6 +13,7 @@ var canvas,
 
 // Constants
 const SEARCHDEPTH = 4;
+const RENDERPAUSE = 100; // ms
 const COLORS = {
   grey:   "#E4F1FE",
   player: "#19B5FE",
@@ -78,7 +79,7 @@ function play(e) {
   if ( !checkWin(tile) ) {
     // Run AI.
     ++gamestate.turn;
-    setTimeout(() => ai(), 50); // Avoid renderblock.
+    setTimeout(() => ai(), RENDERPAUSE); // Avoid renderblock.
   }
 
   render();
@@ -208,7 +209,7 @@ function win(player) {
     render();
 
     if (gamestate.turn % 2 === 1)
-      setTimeout(() => ai(), 50); // Avoid renderblock.
+      setTimeout(() => ai(), RENDERPAUSE); // Avoid renderblock.
   }, 1000);
 }
 
