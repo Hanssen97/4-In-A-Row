@@ -63,7 +63,7 @@ function Tile(x, y) {
         break;
     }
     ctx.rect(this.x, this.y, DIMENTIONS.tilesize, DIMENTIONS.tilesize);
-    ctx.fillRect(x, this.y, DIMENTIONS.tilesize, DIMENTIONS.tilesize);
+    ctx.fillRect(this.x, this.y, DIMENTIONS.tilesize, DIMENTIONS.tilesize);
     ctx.stroke();
   };
 }
@@ -173,7 +173,7 @@ function validateDiagonalUp(state, tile) {
   return sum;
 }
 
-// validateDiagonalUp ----------------------------------------------------------
+// validateDiagonalDown --------------------------------------------------------
 function validateDiagonalDown(state, tile) {
   let x = tile.x/DIMENTIONS.tilesize,   y = tile.y/DIMENTIONS.tilesize,   sum = 0;
 
